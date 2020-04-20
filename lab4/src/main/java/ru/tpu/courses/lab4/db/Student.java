@@ -10,7 +10,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Student implements Parcelable {
+public class Student extends StudentGroupListItem implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     public int id;
@@ -24,19 +24,17 @@ public class Student implements Parcelable {
     @ColumnInfo(name = "last_name")
     public String lastName;
     @Nullable
-    @ColumnInfo(name = "photo_path")
-    public String photoPath;
+    @ColumnInfo(name = "group_id")
+    public int groupId;
 
     public Student(
             @NonNull String firstName,
             @NonNull String secondName,
-            @NonNull String lastName,
-            @Nullable String photoPath
+            @NonNull String lastName
     ) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.secondName = secondName;
-        this.photoPath = photoPath;
     }
 
     protected Student(Parcel in) {
@@ -44,7 +42,7 @@ public class Student implements Parcelable {
         firstName = in.readString();
         secondName = in.readString();
         lastName = in.readString();
-        photoPath = in.readString();
+        groupId = in.readInt();
     }
 
     public static final Creator<Student> CREATOR = new Creator<Student>() {
@@ -70,6 +68,11 @@ public class Student implements Parcelable {
         dest.writeString(firstName);
         dest.writeString(secondName);
         dest.writeString(lastName);
-        dest.writeString(photoPath);
+        dest.writeInt(groupId);
+    }
+
+    @Override
+    public int getType() {
+        return TYPE_STUDENT;
     }
 }

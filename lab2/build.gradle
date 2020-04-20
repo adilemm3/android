@@ -3,5 +3,8 @@ apply from: rootProject.file('feature.gradle')
 android.resourcePrefix 'lab2_'
 
 dependencies {
-	implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 }

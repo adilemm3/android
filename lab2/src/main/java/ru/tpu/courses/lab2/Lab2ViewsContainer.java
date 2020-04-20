@@ -6,9 +6,12 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.text.TextUtils;
 
 import androidx.annotation.Px;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 /**
  * Простейший пример самописного View. В данном случае мы просто наследуемся от LinearLayout-а и
  * добавляем свою логику, но также есть возможность отнаследоваться от {@link android.view.ViewGroup},
@@ -20,7 +23,7 @@ import androidx.annotation.Px;
 public class Lab2ViewsContainer extends LinearLayout {
 
     private int minViewsCount;
-    private int viewsCount;
+    private List<Double> viewsValues;
 
     /**
      * Этот конструктор используется при создании View в коде.
@@ -57,42 +60,56 @@ public class Lab2ViewsContainer extends LinearLayout {
         // Полученный TypedArray необходимо обязательно очистить.
         a.recycle();
 
-        setViewsCount(minViewsCount);
+        initializeValues();
     }
 
-    /**
-     * Программно создаём {@link TextView} и задаём его атрибуты, альтернативно можно описать его в
-     * xml файле и инфлейтить его через класс LayoutInflater.
-     */
-    public void incrementViews() {
-        TextView textView = new TextView(getContext());
-        textView.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
-        textView.setTextSize(16);
-        textView.setText(String.valueOf(viewsCount++));
-        // У каждого View, который находится внутри ViewGroup есть LayoutParams,
-        // в них содержится информация для лэйаута компонентов.
-        // Базовая реализация LayoutParams содержит только определение ширины и высоты
-        // (то, что мы указываем в xml в атрибутах layout_widget и layout_height).
-        // Получить их можно через метод getLayoutParams у View. Метод addView смотрит, если у View
-        // не установлены LayoutParams, то создаёт дефолтные, вызывая метод generateDefaultLayoutParams
-        addView(textView);
+    public void initializeValues(){
+        setViewsValues(initialValues(minViewsCount));
     }
 
-    public void setViewsCount(int viewsCount) {
-        if (this.viewsCount == viewsCount) {
-            return;
+    private Random rand = new Random();
+    private double randomValue(){
+        return Math.round(rand.nextDouble()*100)/10.;
+    }
+
+    private double[] initialValues(int count){
+        double[] initialValues = new double[count];
+        for(int i=0;i<count;i++){
+            initialValues[i] = randomValue();
         }
-        viewsCount = viewsCount < minViewsCount ? minViewsCount : viewsCount;
 
+        return initialValues;
+    }
+
+    public void setViewsValues(double[] values) {
         removeAllViews();
-        this.viewsCount = 0;
-        for (int i = 0; i < viewsCount; i++) {
-            incrementViews();
+        viewsValues = new ArrayList<>();
+        for (int i = 0; i < values.length; i++) {
+            viewsValues.add(values[i]);
+            addViewValue(values[i], Integer.toString(i+1));
         }
     }
 
-    public int getViewsCount() {
-        return viewsCount;
+    public double[] getViewsValues() {
+        double[] target = new double[viewsValues.size()];
+        for (int i = 0; i < target.length; i++) {
+            target[i] = viewsValues.get(i);
+        }
+        return target;
+    }
+
+    public void addValue(String text) {
+        double val = randomValue();
+        viewsValues.add(val);
+        addViewValue(val, text);
+    }
+
+    public void addViewValue(double viewValue, String name) {
+        Lab2View lab2View = new Lab2View(getContext());
+        lab2View.setValue(viewValue);
+        if (TextUtils.isDigitsOnly(name)) name = "Запись № " + name ;
+        lab2View.setTitle(name);
+        addView(lab2View);
     }
 
     /**

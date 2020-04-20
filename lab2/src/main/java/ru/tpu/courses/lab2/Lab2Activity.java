@@ -3,7 +3,9 @@ package ru.tpu.courses.lab2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,10 +38,10 @@ public class Lab2Activity extends AppCompatActivity {
         return new Intent(context, Lab2Activity.class);
     }
 
-    private static final String STATE_VIEWS_COUNT = "views_count";
+    private static final String STATE_VIEWS_VALUES = "viewsValues";
 
     private Lab2ViewsContainer lab2ViewsContainer;
-
+    Button addButton;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,17 +54,28 @@ public class Lab2Activity extends AppCompatActivity {
         // Тип вью, в которую происходит каст, не проверяется, поэтому если здесь указать View,
         // отличную от View в XML, то приложение крашнется на вызове этого метода.
         lab2ViewsContainer = findViewById(R.id.container);
-        findViewById(R.id.btn_add_view).setOnClickListener(view -> lab2ViewsContainer.incrementViews());
 
-        // Восстанавливаем состояние нашего View, добавляя заново все View
+        addButton = (Button) findViewById(R.id.btn_add_view);
+        addButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                EditText textView = (EditText) findViewById(R.id.lab2_edittext);
+                lab2ViewsContainer.addValue(textView.getText().toString());
+            }
+        });
+        findViewById(R.id.btn_reset).setOnClickListener(view -> lab2ViewsContainer.initializeValues());
+        //findViewById(R.id.btn_add_view).setOnClickListener(view -> lab2ViewsContainer.incrementViews());
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
-            lab2ViewsContainer.setViewsCount(savedInstanceState.getInt(STATE_VIEWS_COUNT));
+            lab2ViewsContainer.setViewsValues(savedInstanceState.getDoubleArray(STATE_VIEWS_VALUES));
         }
     }
-
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_VIEWS_COUNT, lab2ViewsContainer.getViewsCount());
+        outState.putDoubleArray(STATE_VIEWS_VALUES, lab2ViewsContainer.getViewsValues());
     }
 }

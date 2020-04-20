@@ -3,11 +3,16 @@ package ru.tpu.courses.lab3;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -54,6 +59,8 @@ public class Lab3Activity extends AppCompatActivity {
         setTitle(getString(R.string.lab3_title, getClass().getSimpleName()));
 
         setContentView(R.layout.lab3_activity);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         list = findViewById(android.R.id.list);
         fab = findViewById(R.id.fab);
 
@@ -77,6 +84,8 @@ public class Lab3Activity extends AppCompatActivity {
         list.setAdapter(studentsAdapter = new StudentsAdapter());
         studentsAdapter.setStudents(studentsCache.getStudents());
 
+        studentsAdapter.setLists();
+
         /*
         При нажатии на кнопку мы переходим на Activity для добавления студента. Обратите внимание,
         что здесь используется метод startActivityForResult. Этот метод позволяет организовывать
@@ -91,6 +100,43 @@ public class Lab3Activity extends AppCompatActivity {
                 )
         );
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.lab3_search_student, menu);
+
+        //задание элемента поиска в тулбаре
+        MenuItem search = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
+        search(searchView);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    //функция, срабатывающая при вводе поискового запроса
+    private void search(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //произошло нажатие "подтвердить"
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                studentsAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            //произошло любое изменение текста
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                studentsAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+    }
+
+
 
     /**
      * Этот метод вызывается после того, как мы ушли с запущенной с помощью метода

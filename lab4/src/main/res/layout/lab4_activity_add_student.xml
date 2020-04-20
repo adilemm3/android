@@ -46,12 +46,16 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageView
-            android:id="@+id/photo"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:layout_margin="12dp"
-            android:scaleType="centerCrop"
-            />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Spinner
+                android:id="@+id/group_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
     </LinearLayout>
 </ScrollView>

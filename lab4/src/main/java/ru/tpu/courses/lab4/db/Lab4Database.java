@@ -6,6 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+
+import java.lang.reflect.Array;
 
 /**
  * <p>
@@ -26,16 +30,49 @@ import androidx.room.RoomDatabase;
  * Room возвращает нам инстанс уже сгенерированной реализации БД.
  * </p>
  */
-@Database(entities = Student.class, version = 1, exportSchema = false)
+@Database(entities = {Student.class, Group.class}, version = 4, exportSchema = false)
 public abstract class Lab4Database extends RoomDatabase {
 
     private static Lab4Database db;
 
-    /**
-     * Синглетон, в котором происходит инициализация и настройка самой БД. Используем синглетон,
-     * т.к. инстанс класса БД должен быть только один (т.ё. в нём происходит управление
-     * соединением к БД).
-     */
+
+    public static final Migration MIGRATION_1_2 = new Migration(1,2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE `group` (" +
+                    "id INTEGER PRIMARY KEY NOT NULL," +
+                    "group_name TEXT NOT NULL)");
+
+            database.execSQL("CREATE TABLE new_Student (" +
+                    "id INTEGER PRIMARY KEY NOT NULL," +
+                    "first_name TEXT NOT NULL," +
+                    "second_name TEXT NOT NULL," +
+                    "last_name TEXT NOT NULL," +
+                    "group_id INTEGER NOT NULL DEFAULT 0)");
+
+            database.execSQL("INSERT INTO new_Student (id, first_name,second_name,last_name) " +
+                    "SELECT id, first_name, second_name, last_name FROM student");
+            database.execSQL("DROP TABLE student");
+            database.execSQL("ALTER TABLE new_Student RENAME TO student");
+        }
+    };
+
+    public static final Migration MIGRATION_2_3 = new Migration(2,3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("UPDATE `group` SET group_name='Без группы' " +
+                    "WHERE id=0;");
+        }
+    };
+
+    public static final Migration MIGRATION_3_4 = new Migration(3,4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("INSERT INTO `group` (id, group_name)" +
+                    "VALUES (0, 'Без группы');");
+        }
+    };
+
     @NonNull
     public static Lab4Database getInstance(@NonNull Context context) {
         if (db == null) {
@@ -46,13 +83,7 @@ public abstract class Lab4Database extends RoomDatabase {
                             Lab4Database.class,
                             "lab4_database"
                     )
-                            // Запросы к БД могут быть весьма медленными и вообще практически любое
-                            // обращение к файловой системе рекомендуется выполнять отдельно от
-                            // основного потока. По умолчанию, если выполнить запросы к БД через
-                            // Room, то приложение будет крашится (это некоторый способ сказать
-                            // программисту, что он делает неоптимальную вещь). Пока что мы
-                            // отключаем эту проверку этим методом. В следующей лабораторной работе
-                            // подробнее будет рассмотрено взаимодействие с БД не через основной поток.
+                            .addMigrations(new Migration[]{MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4})
                             .allowMainThreadQueries()
                             .build();
                 }
@@ -62,4 +93,7 @@ public abstract class Lab4Database extends RoomDatabase {
     }
 
     public abstract StudentDao studentDao();
+    public abstract GroupDao groupDao();
+
+
 }

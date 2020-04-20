@@ -2,6 +2,8 @@ package ru.tpu.courses.lab3;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Spannable;
+import android.text.SpannableString;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.ObjectsCompat;
@@ -19,17 +21,26 @@ public class Student implements Parcelable {
 	public String secondName;
 	@NonNull
 	public String lastName;
+	@NonNull
+	public Spannable shownName;
 
 	public Student(@NonNull String firstName, @NonNull String secondName, @NonNull String lastName) {
 		this.lastName = lastName;
 		this.firstName = firstName;
 		this.secondName = secondName;
+		this.shownName = new SpannableString(lastName + " " + firstName + " " + secondName);
+
 	}
 
 	protected Student(Parcel in) {
 		firstName = in.readString();
 		lastName = in.readString();
 		secondName = in.readString();
+		shownName = new SpannableString(in.readString());
+	}
+
+	public String getName() {
+		return (firstName + " " + lastName + " " + secondName);
 	}
 
 	public static final Creator<Student> CREATOR = new Creator<Student>() {
@@ -54,6 +65,7 @@ public class Student implements Parcelable {
 		dest.writeString(firstName);
 		dest.writeString(lastName);
 		dest.writeString(secondName);
+		dest.writeString(shownName.toString());
 	}
 
 	@Override
@@ -68,6 +80,6 @@ public class Student implements Parcelable {
 
 	@Override
 	public int hashCode() {
-		return ObjectsCompat.hash(lastName, firstName, secondName);
+		return ObjectsCompat.hash(lastName, firstName, secondName, shownName);
 	}
 }

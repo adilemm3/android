@@ -1,9 +1,11 @@
-<manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="ru.tpu.courses.lab2"
-	>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.tpu.courses.lab2">
 
-	<application>
-		<activity android:name=".Lab2Activity" />
-	</application>
+    <application>
+        <activity android:name=".Lab2View">
+        </activity>
+        <activity android:name=".Lab2Activity" />
+    </application>
+
 </manifest>

@@ -27,7 +27,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_NUMBER:
                 return new NumberHolder(parent);
             case TYPE_STUDENT:
-                return new StudentHolder(parent);
+                //return new StudentHolder(parent);
         }
         throw new IllegalArgumentException("unknown viewType = " + viewType);
     }
@@ -46,13 +46,13 @@ public class StudentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 studentHolder.student.setText(student.lastName + " " + student.firstName
                         + " " + student.secondName);
 
-                if (!TextUtils.isEmpty(student.photoPath)) {
+                /*if (!TextUtils.isEmpty(student.photoPath)) {
                     studentHolder.photo.setVisibility(View.VISIBLE);
                     studentHolder.photo.setImageURI(Uri.parse(student.photoPath));
                 } else {
                     studentHolder.photo.setVisibility(View.GONE);
                     studentHolder.photo.setImageURI(null);
-                }
+                }*/
                 break;
         }
     }

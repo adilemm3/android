@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Delete;
 
 import java.util.List;
 
@@ -22,11 +23,20 @@ public interface StudentDao {
     @Insert
     void insert(@NonNull Student student);
 
+    @Query("SELECT * FROM `student` WHERE "+
+            "id = :studentId")
+    Student selectStudentById(@NonNull int studentId);
+
     @Query(
             "SELECT COUNT(*) FROM student WHERE " +
                     "first_name = :firstName AND " +
                     "second_name = :secondName AND " +
-                    "last_name = :lastName"
+                    "last_name = :lastName AND " +
+                    "group_id = :groupId"
     )
-    int count(@NonNull String firstName, @NonNull String secondName, @NonNull String lastName);
+    int count(@NonNull String firstName, @NonNull String secondName, @NonNull String lastName, int groupId);
+
+
+    @Delete
+    public void deleteStudent(@NonNull Student student);
 }
