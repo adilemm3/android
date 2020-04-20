@@ -29,5 +29,4 @@ public interface GroupDao {
                     "group_name = :groupName"
     )
     int count(@NonNull String groupName);
-
 }
